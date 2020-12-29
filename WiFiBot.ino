@@ -1,23 +1,23 @@
-#define ENA   14          
-#define ENB   12          
-#define IN_1  15          
-#define IN_2  13          
-#define IN_3  2           
-#define IN_4  0           
+#define ENA   14          // enables right motors
+#define ENB   12          // enables left motors
+#define IN_1  15          // controls left wheels direction and speed
+#define IN_2  13          // controls left wheels direction and speed
+#define IN_3  2           // controls right wheels direction and speed
+#define IN_4  0           // controls right wheels direction and speed
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h> 
 #include <ESP8266WebServer.h>
 
-String command;             
+String command;  //store apps command state           
 int speedCar = 800;         
 int speed_Coeff = 3;
 
-const char* ssid = "NodeMCU Car";
-ESP8266WebServer server(80);
+const char* ssid = "NodeMCU Car"; // stores name of WiFi network
+ESP8266WebServer server(80); // creates webserver object that listens for http request on port 80
 
 void setup() {
- 
+ // this function explains that all pins are output pins
  pinMode(ENA, OUTPUT);
  pinMode(ENB, OUTPUT);  
  pinMode(IN_1, OUTPUT);
@@ -25,12 +25,12 @@ void setup() {
  pinMode(IN_3, OUTPUT);
  pinMode(IN_4, OUTPUT); 
   
-  Serial.begin(115200);
+  Serial.begin(115200); // tells the baud rate and starts the serial communication to send messages to computer.
   
 // Connecting WiFi
 
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP(ssid);
+  WiFi.mode(WIFI_AP); //NodeMCU is the accesspoint and connects to the mobile phone(station) STA over WiFi
+  WiFi.softAP(ssid); // setup open network without a password
 
   IPAddress myIP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
@@ -39,18 +39,18 @@ void setup() {
  // Starting WEB server 
      server.on ( "/", HTTP_handleRoot );
      server.onNotFound ( HTTP_handleRoot );
-     server.begin();    
+     server.begin();    // tells server to start listening
 }
 
 void goAhead(){ 
 
-      digitalWrite(IN_1, LOW);
-      digitalWrite(IN_2, HIGH);
-      analogWrite(ENA, speedCar);
+      digitalWrite(IN_1, LOW); //car doesnt move when "LOW"
+      digitalWrite(IN_2, HIGH); //car moves when "HIGH"
+      analogWrite(ENA, speedCar); //Left motor changes
 
       digitalWrite(IN_3, LOW);
       digitalWrite(IN_4, HIGH);
-      analogWrite(ENB, speedCar);
+      analogWrite(ENB, speedCar); //Right motor changes
   }
 
 void goBack(){ 
@@ -142,7 +142,7 @@ void stopRobot(){
  }
 
 void loop() {
-    server.handleClient();
+    server.handleClient(); //listens to http requests from client
     
       command = server.arg("State");
       if (command == "F") goAhead();
